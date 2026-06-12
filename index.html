@@ -24,6 +24,12 @@
   --gold:#b0832f;
   --indigo:#42547040;
   --indigo-solid:#3d4f6b;
+  --seed:#8c6d3f;
+  --seed-bg:#ede3cf;
+  --teal:#4e6e64;
+  --teal-bg:#dde8e2;
+  --plum:#6b4459;
+  --plum-bg:#e9dde4;
   --shadow:0 1px 2px rgba(42,37,32,.06),0 8px 24px rgba(42,37,32,.07);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -72,8 +78,11 @@ body::before{
 .level-btn:hover{border-color:var(--ink-faint)}
 .level-glyph{font-family:'Fraunces';font-size:24px;width:48px;height:48px;flex:none;border-radius:50%;
   display:grid;place-items:center;border:1px solid var(--line)}
+.level-btn.semente .level-glyph{color:var(--seed);background:var(--seed-bg);border-color:transparent}
 .level-btn.aprendiz .level-glyph{color:var(--sage);background:var(--sage-bg);border-color:transparent}
+.level-btn.discipulo .level-glyph{color:var(--teal);background:var(--teal-bg);border-color:transparent}
 .level-btn.sabio .level-glyph{color:var(--indigo-solid);background:#dfe4ec;border-color:transparent}
+.level-btn.mestre .level-glyph{color:var(--plum);background:var(--plum-bg);border-color:transparent}
 .level-btn.mix .level-glyph{color:var(--gold);background:#efe5cf;border-color:transparent}
 .level-name{font-family:'Fraunces';font-size:19px;font-weight:500}
 .level-desc{font-size:13.5px;color:var(--ink-soft);margin-top:1px}
@@ -92,8 +101,11 @@ body::before{
 .theme-tag .dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
 .lvl-pill{font-family:'Fraunces';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
   padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
+.lvl-pill.semente{color:var(--seed);background:var(--seed-bg);border-color:transparent}
 .lvl-pill.aprendiz{color:var(--sage);background:var(--sage-bg);border-color:transparent}
+.lvl-pill.discipulo{color:var(--teal);background:var(--teal-bg);border-color:transparent}
 .lvl-pill.sabio{color:var(--indigo-solid);background:#dfe4ec;border-color:transparent}
+.lvl-pill.mestre{color:var(--plum);background:var(--plum-bg);border-color:transparent}
 .question{font-family:'Fraunces';font-weight:400;font-size:25px;line-height:1.28;margin-bottom:24px;
   letter-spacing:-.005em}
 .options{display:flex;flex-direction:column;gap:11px}
@@ -152,7 +164,7 @@ body::before{
 
   <!-- START -->
   <section class="screen active" id="start">
-    <div class="mark">Edição Quiz · Lote 1</div>
+    <div class="mark">Edição Quiz</div>
     <h1 class="logo">Biblia<em>Game</em></h1>
     <div class="rule"></div>
     <p class="tagline">aprenda a Palavra enquanto se diverte</p>
@@ -161,17 +173,29 @@ body::before{
     <div class="filter-chips" id="filter-chips"></div>
     <p class="level-q">Como você quer jogar?</p>
     <div class="levels">
+      <button class="level-btn semente" data-level="semente">
+        <span class="level-glyph">1</span>
+        <span><span class="level-name">Semente</span><span class="level-desc">Primeiros passos, pra crianças pequenas</span></span>
+      </button>
       <button class="level-btn aprendiz" data-level="aprendiz">
-        <span class="level-glyph">A</span>
+        <span class="level-glyph">2</span>
         <span><span class="level-name">Aprendiz</span><span class="level-desc">Perguntas diretas, pra toda a família</span></span>
       </button>
+      <button class="level-btn discipulo" data-level="discipulo">
+        <span class="level-glyph">3</span>
+        <span><span class="level-name">Discípulo</span><span class="level-desc">Pra quem já caminha na Palavra</span></span>
+      </button>
       <button class="level-btn sabio" data-level="sabio">
-        <span class="level-glyph">S</span>
+        <span class="level-glyph">4</span>
         <span><span class="level-name">Sábio</span><span class="level-desc">Perguntas mais profundas, pra quem já conhece</span></span>
+      </button>
+      <button class="level-btn mestre" data-level="mestre">
+        <span class="level-glyph">5</span>
+        <span><span class="level-name">Mestre</span><span class="level-desc">Detalhes que só os estudiosos lembram</span></span>
       </button>
       <button class="level-btn mix" data-level="mix">
         <span class="level-glyph">∞</span>
-        <span><span class="level-name">Misturado</span><span class="level-desc">Os dois níveis embaralhados</span></span>
+        <span><span class="level-name">Misturado</span><span class="level-desc">Todos os níveis embaralhados</span></span>
       </button>
     </div>
   </section>
@@ -207,10 +231,10 @@ body::before{
     <button class="again-btn" id="again">Jogar de novo</button>
   </section>
 
-  <div class="footer">Lote 1–2 · 20 temas · Gênesis a Êxodo · rodadas de 10</div>
+  <div class="footer">602 perguntas · 5 níveis · rodadas de 10</div>
 </div>
 
-<script src="perguntas.js?v=1"></script>
+<script src="perguntas.js?v=2"></script>
 <script>
 'use strict';
 
@@ -281,7 +305,8 @@ function renderQuestion(){
   $('qcount').textContent='Pergunta '+(idx+1)+' de '+deck.length;
   $('theme').textContent=q.tema;
   const pill=$('lvlpill');
-  pill.textContent = q.nivel==='aprendiz'?'Aprendiz':'Sábio';
+  const NIVEIS={semente:'Semente',aprendiz:'Aprendiz',discipulo:'Discípulo',sabio:'Sábio',mestre:'Mestre'};
+  pill.textContent = NIVEIS[q.nivel]||q.nivel;
   pill.className='lvl-pill '+q.nivel;
   $('question').textContent=q.q;
 

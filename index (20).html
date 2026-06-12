@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#13182a">
+<title>BibliaGame · Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#13182a;
+  --paper-2:#1a2038;
+  --card:#1c2238;
+  --ink:#f1ead9;
+  --ink-soft:#aaa593;
+  --ink-faint:#777465;
+  --line:#2e3553;
+  --line-soft:#252c46;
+  --sage:#8fbc94;
+  --sage-bg:#1f3326;
+  --clay:#d97f66;
+  --clay-bg:#3a2521;
+  --gold:#e3b04b;
+  --indigo:#8aa0d840;
+  --indigo-solid:#9eb2e8;
+  --sabio-bg:#232c4c;
+  --seed:#e0a64e;
+  --seed-bg:#382b12;
+  --teal:#7fc4cf;
+  --teal-bg:#15323b;
+  --plum:#d98aa8;
+  --plum-bg:#3a2231;
+  --mix-bg:#37300f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Spectral',Georgia,serif;
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+  overflow-x:hidden;
+}
+/* washi paper grain */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+/* candlelight halo */
+body::after{
+  content:"";position:fixed;left:50%;top:-220px;transform:translateX(-50%);z-index:0;pointer-events:none;
+  width:700px;height:520px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(227,176,75,.13),rgba(227,176,75,.05) 55%,transparent 75%);
+}
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;min-height:100%;
+  display:flex;flex-direction:column;padding:0 22px;}
+.screen{display:none;flex:1;flex-direction:column;animation:fade .5s ease both}
+.screen.active{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- START ---------- */
+#start{justify-content:center;text-align:center;padding:40px 0}
+.mark{font-family:'Spectral';font-size:11px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:20px}
+.logo{font-family:'Fraunces';font-weight:400;font-size:54px;line-height:.92;letter-spacing:-.01em}
+.logo em{font-style:italic;font-weight:500;color:var(--gold)}
+.rule{width:46px;height:1px;background:var(--line);margin:22px auto}
+.tagline{font-style:italic;color:var(--ink-soft);font-size:17px;margin-bottom:6px}
+.naa-note{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:30px}
+.filter-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:12px}
+.filter-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:34px}
+.chip{font-family:'Spectral';font-size:13.5px;padding:8px 15px;border-radius:22px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink-soft);cursor:pointer;transition:all .15s}
+.chip:active{transform:scale(.96)}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip .n{font-size:11px;opacity:.6;margin-left:5px}
+.level-q{font-family:'Fraunces';font-size:15px;letter-spacing:.02em;color:var(--ink-soft);margin-bottom:16px}
+.levels{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.level-btn{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:18px 22px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:16px;
+  color:var(--ink);transition:transform .15s,border-color .15s,box-shadow .15s;box-shadow:var(--shadow)}
+.level-btn:active{transform:scale(.985)}
+.level-btn:hover{border-color:var(--ink-faint)}
+.level-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.level-btn>span:last-child{display:flex;flex-direction:column;min-width:0}
+.level-glyph{font-family:'Fraunces';font-size:24px;width:48px;height:48px;flex:none;border-radius:50%;
+  display:grid;place-items:center;border:1px solid var(--line)}
+.level-btn.semente .level-glyph{color:var(--seed);background:var(--seed-bg);border-color:transparent;box-shadow:0 0 18px 0 #e0a64e38,inset 0 0 10px #e0a64e1f}
+.level-btn.aprendiz .level-glyph{color:var(--sage);background:var(--sage-bg);border-color:transparent;box-shadow:0 0 18px 0 #8fbc9438,inset 0 0 10px #8fbc941f}
+.level-btn.discipulo .level-glyph{color:var(--teal);background:var(--teal-bg);border-color:transparent;box-shadow:0 0 18px 0 #7fc4cf38,inset 0 0 10px #7fc4cf1f}
+.level-btn.sabio .level-glyph{color:var(--indigo-solid);background:var(--sabio-bg);border-color:transparent;box-shadow:0 0 18px 0 #9eb2e838,inset 0 0 10px #9eb2e81f}
+.level-btn.mestre .level-glyph{color:var(--plum);background:var(--plum-bg);border-color:transparent;box-shadow:0 0 18px 0 #d98aa838,inset 0 0 10px #d98aa81f}
+.level-btn.mix .level-glyph{color:var(--gold);background:var(--mix-bg);border-color:transparent;box-shadow:0 0 18px 0 #e3b04b38,inset 0 0 10px #e3b04b1f}
+.level-name{font-family:'Fraunces';font-size:19px;font-weight:500;display:block;line-height:1.25}
+.level-desc{font-size:13.5px;color:var(--ink-soft);display:block;margin-top:3px;line-height:1.35}
+
+/* ---------- QUIZ ---------- */
+#quiz{padding:18px 0 28px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.progress{flex:1;height:3px;background:var(--line-soft);border-radius:3px;overflow:hidden;margin-right:16px}
+.progress span{display:block;height:100%;background:var(--ink);width:0;transition:width .4s ease}
+.metrics{display:flex;gap:18px;font-family:'Fraunces';font-size:13px;color:var(--ink-soft);white-space:nowrap}
+.metrics b{color:var(--ink);font-weight:600}
+.metrics .streak.hot b{color:var(--clay)}
+.qcount{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin:22px 0 10px}
+.theme-tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-soft);margin-bottom:14px}
+.theme-tag .dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.lvl-pill{font-family:'Fraunces';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
+.lvl-pill.semente{color:var(--seed);background:var(--seed-bg);border-color:transparent}
+.lvl-pill.aprendiz{color:var(--sage);background:var(--sage-bg);border-color:transparent}
+.lvl-pill.discipulo{color:var(--teal);background:var(--teal-bg);border-color:transparent}
+.lvl-pill.sabio{color:var(--indigo-solid);background:var(--sabio-bg);border-color:transparent}
+.lvl-pill.mestre{color:var(--plum);background:var(--plum-bg);border-color:transparent}
+.question{font-family:'Fraunces';font-weight:400;font-size:25px;line-height:1.28;margin-bottom:24px;
+  letter-spacing:-.005em}
+.options{display:flex;flex-direction:column;gap:11px}
+.opt{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+  text-align:left;cursor:pointer;font-family:'Spectral';font-size:16.5px;color:var(--ink);
+  display:flex;align-items:center;gap:14px;transition:border-color .15s,background .2s,transform .12s;
+  box-shadow:var(--shadow)}
+.opt:active{transform:scale(.99)}
+.opt:hover:not(:disabled){border-color:var(--ink-faint)}
+.opt:disabled{cursor:default}
+.opt .key{font-family:'Fraunces';font-size:13px;width:26px;height:26px;flex:none;border-radius:50%;
+  border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-soft);transition:all .2s}
+.opt.correct{border-color:var(--sage);background:var(--sage-bg)}
+.opt.correct .key{background:var(--sage);color:#13182a;border-color:transparent}
+.opt.wrong{border-color:var(--clay);background:var(--clay-bg)}
+.opt.wrong .key{background:var(--clay);color:#13182a;border-color:transparent}
+.opt.dim{opacity:.5}
+
+/* explanation */
+.explain{margin-top:22px;border-radius:16px;padding:20px 20px 18px;background:var(--paper-2);
+  border:1px solid var(--line);position:relative;overflow:hidden;
+  max-height:0;opacity:0;padding-top:0;padding-bottom:0;margin-top:0;border-width:0;
+  transition:max-height .45s ease,opacity .35s ease,padding .45s ease,margin .45s ease}
+.explain.show{max-height:420px;opacity:1;padding-top:20px;padding-bottom:18px;margin-top:22px;border-width:1px}
+.explain::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+.explain-head{font-family:'Fraunces';font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.explain-body{font-size:16px;line-height:1.55;color:var(--ink)}
+.ref{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-family:'Fraunces';
+  font-size:13.5px;color:var(--ink-soft);font-style:italic}
+.ref svg{width:14px;height:14px;fill:var(--gold)}
+
+.next-btn{margin-top:20px;background:var(--ink);color:var(--paper);border:none;border-radius:14px;
+  padding:17px;font-family:'Fraunces';font-size:16px;letter-spacing:.02em;cursor:pointer;width:100%;
+  opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s,background .15s;pointer-events:none}
+.next-btn.show{opacity:1;transform:none;pointer-events:auto}
+.next-btn:active{background:#ddd4bd}
+
+/* ---------- END ---------- */
+#end{justify-content:center;text-align:center;padding:40px 0}
+.end-mark{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:18px}
+.score-big{font-family:'Fraunces';font-size:72px;line-height:1;letter-spacing:-.02em}
+.score-big .of{color:var(--ink-faint);font-size:30px}
+.end-msg{font-family:'Fraunces';font-style:italic;font-size:21px;margin:18px 0 6px}
+.end-sub{color:var(--ink-soft);font-size:15px;margin-bottom:34px}
+.again-btn{background:var(--ink);color:var(--paper);border:none;border-radius:14px;padding:16px 40px;
+  font-family:'Fraunces';font-size:16px;cursor:pointer}
+.again-btn:active{background:#ddd4bd}
+
+.footer{text-align:center;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);padding:14px 0 22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- START -->
+  <section class="screen active" id="start">
+    <div class="mark">Edição Quiz</div>
+    <h1 class="logo">Biblia<em>Game</em></h1>
+    <div class="rule"></div>
+    <p class="tagline">aprenda a Palavra enquanto se diverte</p>
+    <p class="naa-note">conteúdo · Nova Almeida Atualizada</p>
+    <p class="filter-label">Tema</p>
+    <div class="filter-chips" id="filter-chips"></div>
+    <p class="level-q">Como você quer jogar?</p>
+    <div class="levels">
+      <button class="level-btn semente" data-level="semente">
+        <span class="level-glyph">1</span>
+        <span><span class="level-name">Semente</span><span class="level-desc">Primeiros passos, pra crianças pequenas</span></span>
+      </button>
+      <button class="level-btn aprendiz" data-level="aprendiz">
+        <span class="level-glyph">2</span>
+        <span><span class="level-name">Aprendiz</span><span class="level-desc">Perguntas diretas, pra toda a família</span></span>
+      </button>
+      <button class="level-btn discipulo" data-level="discipulo">
+        <span class="level-glyph">3</span>
+        <span><span class="level-name">Discípulo</span><span class="level-desc">Pra quem já caminha na Palavra</span></span>
+      </button>
+      <button class="level-btn sabio" data-level="sabio">
+        <span class="level-glyph">4</span>
+        <span><span class="level-name">Sábio</span><span class="level-desc">Perguntas mais profundas, pra quem já conhece</span></span>
+      </button>
+      <button class="level-btn mestre" data-level="mestre">
+        <span class="level-glyph">5</span>
+        <span><span class="level-name">Mestre</span><span class="level-desc">Detalhes que só os estudiosos lembram</span></span>
+      </button>
+      <button class="level-btn mix" data-level="mix">
+        <span class="level-glyph">∞</span>
+        <span><span class="level-name">Misturado</span><span class="level-desc">Todos os níveis embaralhados</span></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="quiz">
+    <div class="topbar">
+      <div class="progress"><span id="bar"></span></div>
+      <div class="metrics">
+        <span>Acertos <b id="m-score">0</b></span>
+        <span class="streak" id="m-streak-wrap">Sequência <b id="m-streak">0</b></span>
+      </div>
+    </div>
+    <div class="qcount" id="qcount">Pergunta 1</div>
+    <div class="theme-tag"><span class="dot"></span><span id="theme">—</span>
+      <span class="lvl-pill" id="lvlpill">—</span></div>
+    <h2 class="question" id="question">—</h2>
+    <div class="options" id="options"></div>
+    <div class="explain" id="explain">
+      <div class="explain-head" id="explain-head">Entenda a passagem</div>
+      <div class="explain-body" id="explain-body"></div>
+      <div class="ref" id="ref"></div>
+    </div>
+    <button class="next-btn" id="next">Próxima</button>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="end">
+    <div class="end-mark">Partida concluída</div>
+    <div class="score-big"><span id="final-score">0</span><span class="of">/<span id="final-total">0</span></span></div>
+    <p class="end-msg" id="end-msg">—</p>
+    <p class="end-sub" id="end-sub"></p>
+    <button class="again-btn" id="again">Jogar de novo</button>
+  </section>
+
+  <div class="footer">602 perguntas · 5 níveis · rodadas de 10</div>
+</div>
+
+<script src="perguntas.js?v=2"></script>
+<script>
+'use strict';
+
+/* ============================================================
+   Perguntas carregadas de perguntas.js (window.BIBLIA)
+   Conteúdo fundamentado na NAA · referências citadas, explicações com palavras próprias
+   ============================================================ */
+const POOL = (window.BIBLIA && window.BIBLIA.perguntas) || [];
+const CATS = (window.BIBLIA && window.BIBLIA.categorias) || {};
+
+/* ============================================================ */
+const $ = id => document.getElementById(id);
+const ROUND_SIZE = 10;
+let deck=[], idx=0, score=0, streak=0, locked=false, selectedCat='ALL';
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+// ---- filtro por tema ----
+function buildFilter(){
+  const counts={};
+  POOL.forEach(q=>{counts[q.cat]=(counts[q.cat]||0)+1});
+  const present=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const wrap=$('filter-chips');
+  wrap.innerHTML='';
+  const mk=(key,label,n)=>{
+    const c=document.createElement('button');
+    c.className='chip'+(key===selectedCat?' on':'');
+    c.innerHTML=label+(n!=null?`<span class="n">${n}</span>`:'');
+    c.addEventListener('click',()=>{
+      selectedCat=key;
+      [...wrap.children].forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+    });
+    wrap.appendChild(c);
+  };
+  mk('ALL','Todos',POOL.length);
+  present.forEach(k=>mk(k, CATS[k]||k, counts[k]));
+}
+
+document.querySelectorAll('.level-btn').forEach(b=>{
+  b.addEventListener('click',()=>startGame(b.dataset.level));
+});
+
+function startGame(level){
+  let pool = POOL.slice();
+  if(selectedCat!=='ALL') pool = pool.filter(q=>q.cat===selectedCat);
+  if(level!=='mix') pool = pool.filter(q=>q.nivel===level);
+  if(pool.length===0){ alert('Esse tema ainda não tem perguntas nesse nível. Escolha outro.'); return; }
+  deck = shuffle(pool).slice(0, ROUND_SIZE);
+  idx=0;score=0;streak=0;
+  $('m-score').textContent='0';
+  $('m-streak').textContent='0';
+  $('m-streak-wrap').classList.remove('hot');
+  show('quiz');
+  renderQuestion();
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderQuestion(){
+  locked=false;
+  const q=deck[idx];
+  $('bar').style.width = (idx/deck.length*100)+'%';
+  $('qcount').textContent='Pergunta '+(idx+1)+' de '+deck.length;
+  $('theme').textContent=q.tema;
+  const pill=$('lvlpill');
+  const NIVEIS={semente:'Semente',aprendiz:'Aprendiz',discipulo:'Discípulo',sabio:'Sábio',mestre:'Mestre'};
+  pill.textContent = NIVEIS[q.nivel]||q.nivel;
+  pill.className='lvl-pill '+q.nivel;
+  $('question').textContent=q.q;
+
+  const opts=$('options');
+  opts.innerHTML='';
+  const keys=['A','B','C','D'];
+  shuffle(q.opcoes).forEach((txt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML=`<span class="key">${keys[i]}</span><span>${txt}</span>`;
+    btn.addEventListener('click',()=>answer(btn,txt,q));
+    opts.appendChild(btn);
+  });
+
+  // reset explanation + next
+  $('explain').classList.remove('show');
+  $('next').classList.remove('show');
+}
+
+function answer(btn,txt,q){
+  if(locked) return;
+  locked=true;
+  const correct = txt===q.correta;
+  const buttons=[...$('options').children];
+
+  buttons.forEach(b=>{
+    b.disabled=true;
+    const label=b.querySelector('span:last-child').textContent;
+    if(label===q.correta){ b.classList.add('correct'); }
+    else if(b===btn){ b.classList.add('wrong'); }
+    else { b.classList.add('dim'); }
+  });
+
+  if(correct){
+    score++; streak++;
+    $('m-score').textContent=score;
+    $('m-streak').textContent=streak;
+    $('m-streak-wrap').classList.toggle('hot',streak>=3);
+  } else {
+    streak=0;
+    $('m-streak').textContent='0';
+    $('m-streak-wrap').classList.remove('hot');
+  }
+
+  // explanation
+  $('explain-head').textContent = correct ? 'Isso mesmo — entenda a passagem' : 'Quase! Entenda a passagem';
+  $('explain-head').style.color = correct ? 'var(--sage)' : 'var(--clay)';
+  $('explain-body').textContent=q.exp;
+  $('ref').innerHTML=`<svg viewBox="0 0 24 24"><path d="M6 4h11a3 3 0 0 1 3 3v13a1 1 0 0 1-1.5.87L13 18l-5.5 2.87A1 1 0 0 1 6 20V4z"/></svg>${q.ref} · NAA`;
+  $('explain').classList.add('show');
+  $('next').classList.add('show');
+  $('next').textContent = idx+1<deck.length ? 'Próxima' : 'Ver resultado';
+}
+
+$('next').addEventListener('click',()=>{
+  idx++;
+  if(idx<deck.length){ renderQuestion(); }
+  else { endGame(); }
+});
+
+function endGame(){
+  $('bar').style.width='100%';
+  $('final-score').textContent=score;
+  $('final-total').textContent=deck.length;
+  const pct=score/deck.length;
+  let msg,sub;
+  if(pct===1){msg='Conhecimento de Sábio!';sub='Gabaritou. A Palavra habita em você com riqueza.';}
+  else if(pct>=.7){msg='Muito bem!';sub='Você conhece bem essas histórias. Continue firme.';}
+  else if(pct>=.4){msg='Bom caminho.';sub='Cada partida ensina um pouco mais. Bora de novo?';}
+  else {msg='Toda jornada começa assim.';sub='Releia as passagens e tente outra vez — você vai longe.';}
+  $('end-msg').textContent=msg;
+  $('end-sub').textContent=sub;
+  show('end');
+}
+
+$('again').addEventListener('click',()=>show('start'));
+
+// ---- init ----
+(function init(){
+  if(!POOL.length){
+    $('start').innerHTML='<div style="text-align:center;padding:60px 10px">'+
+      '<div class="mark">Ops</div>'+
+      '<h1 class="logo" style="font-size:34px;margin:16px 0">Banco não<br>carregado</h1>'+
+      '<p class="tagline">O arquivo <b>perguntas.js</b> precisa estar na mesma pasta deste HTML.</p>'+
+      '</div>';
+    return;
+  }
+  buildFilter();
+})();
+</script>
+</body>
+</html>

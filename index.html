@@ -95,6 +95,13 @@ body::after{
 .daily-desc{font-size:13.5px;color:var(--ink-soft);display:block;margin-top:3px;line-height:1.35}
 .daily-streak{flex:none;font-size:14px;background:#fff;border:1px solid #f2cf7e;border-radius:999px;padding:5px 11px;color:var(--ink)}
 .daily-btn.done{background:var(--card);border-style:dashed}
+.invite-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  background:#fff;border:1.5px solid #25d36655;color:#1a9e4b;border-radius:999px;
+  padding:11px 18px;margin:-6px 0 18px;cursor:pointer;font-family:'Spectral',serif;font-size:14.5px;
+  transition:border-color .15s,background .15s}
+.invite-btn:hover{border-color:#25d366;background:#f2fcf6}
+.invite-btn:focus-visible{outline:2px solid #25d366;outline-offset:2px}
+.invite-btn svg{width:17px;height:17px;fill:#25d366;flex:none}
 .daily-btn.done .daily-glyph{background:var(--sage);box-shadow:none}
 .share-box{margin:18px auto 4px;max-width:280px}
 .squares{font-size:22px;letter-spacing:3px;line-height:1.5;margin:10px 0 14px;word-break:break-all}
@@ -231,6 +238,10 @@ body::after{
         <span class="daily-desc" id="daily-desc">As mesmas 10 perguntas pro Brasil inteiro · uma chance por dia</span>
       </span>
       <span class="daily-streak" id="daily-streak-badge" hidden>🔥 <b id="daily-streak-n">0</b></span>
+    </button>
+    <button class="invite-btn" id="invite-btn">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.5.3.1.5.1.7-.1l1-1.1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1.3z"/></svg>
+      Convidar amigos pro desafio
     </button>
     <div class="levels">
       <button class="level-btn semente" data-level="semente">
@@ -410,6 +421,11 @@ function updateDailyCard(){
   }
 }
 $('daily-btn').addEventListener('click',startDaily);
+$('invite-btn').addEventListener('click',()=>{
+  const text='\u{1F305} BibliaGame \u2014 Desafio Di\u00e1rio #'+dailyNumber()+'\n10 perguntas b\u00edblicas, as mesmas pro Brasil inteiro, uma chance por dia. Topa o desafio?\n\nhttps://bibliagame.com.br';
+  if(navigator.share){ navigator.share({text}).catch(()=>{}); }
+  else{ window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank'); }
+});
 $('share-btn').addEventListener('click',shareDaily);
 /* ======================================== */
 

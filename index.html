@@ -3,34 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#13182a">
 <title>BibliaGame · Quiz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#f3ece0;
-  --paper-2:#ece1cf;
-  --card:#f8f3ea;
-  --ink:#2a2520;
-  --ink-soft:#6a6055;
-  --ink-faint:#9b9080;
-  --line:#ddd0ba;
-  --line-soft:#e7dccb;
-  --sage:#5d6b41;
-  --sage-bg:#e6e8d6;
-  --clay:#a4583c;
-  --clay-bg:#efddd2;
-  --gold:#b0832f;
-  --indigo:#42547040;
-  --indigo-solid:#3d4f6b;
-  --seed:#8c6d3f;
-  --seed-bg:#ede3cf;
-  --teal:#4e6e64;
-  --teal-bg:#dde8e2;
-  --plum:#6b4459;
-  --plum-bg:#e9dde4;
-  --shadow:0 1px 2px rgba(42,37,32,.06),0 8px 24px rgba(42,37,32,.07);
+  --paper:#13182a;
+  --paper-2:#1a2038;
+  --card:#1c2238;
+  --ink:#f1ead9;
+  --ink-soft:#aaa593;
+  --ink-faint:#777465;
+  --line:#2e3553;
+  --line-soft:#252c46;
+  --sage:#8fbc94;
+  --sage-bg:#1f3326;
+  --clay:#d97f66;
+  --clay-bg:#3a2521;
+  --gold:#e3b04b;
+  --indigo:#8aa0d840;
+  --indigo-solid:#9eb2e8;
+  --sabio-bg:#232c4c;
+  --seed:#e0a64e;
+  --seed-bg:#382b12;
+  --teal:#7fc4cf;
+  --teal-bg:#15323b;
+  --plum:#d98aa8;
+  --plum-bg:#3a2231;
+  --mix-bg:#37300f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -44,8 +47,14 @@ body{
 }
 /* washi paper grain */
 body::before{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+/* candlelight halo */
+body::after{
+  content:"";position:fixed;left:50%;top:-220px;transform:translateX(-50%);z-index:0;pointer-events:none;
+  width:700px;height:520px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(227,176,75,.13),rgba(227,176,75,.05) 55%,transparent 75%);
 }
 .wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;min-height:100%;
   display:flex;flex-direction:column;padding:0 22px;}
@@ -73,19 +82,21 @@ body::before{
 .levels{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
 .level-btn{background:var(--card);border:1px solid var(--line);border-radius:16px;
   padding:18px 22px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:16px;
-  transition:transform .15s,border-color .15s,box-shadow .15s;box-shadow:var(--shadow)}
+  color:var(--ink);transition:transform .15s,border-color .15s,box-shadow .15s;box-shadow:var(--shadow)}
 .level-btn:active{transform:scale(.985)}
 .level-btn:hover{border-color:var(--ink-faint)}
+.level-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.level-btn>span:last-child{display:flex;flex-direction:column;min-width:0}
 .level-glyph{font-family:'Fraunces';font-size:24px;width:48px;height:48px;flex:none;border-radius:50%;
   display:grid;place-items:center;border:1px solid var(--line)}
-.level-btn.semente .level-glyph{color:var(--seed);background:var(--seed-bg);border-color:transparent}
-.level-btn.aprendiz .level-glyph{color:var(--sage);background:var(--sage-bg);border-color:transparent}
-.level-btn.discipulo .level-glyph{color:var(--teal);background:var(--teal-bg);border-color:transparent}
-.level-btn.sabio .level-glyph{color:var(--indigo-solid);background:#dfe4ec;border-color:transparent}
-.level-btn.mestre .level-glyph{color:var(--plum);background:var(--plum-bg);border-color:transparent}
-.level-btn.mix .level-glyph{color:var(--gold);background:#efe5cf;border-color:transparent}
-.level-name{font-family:'Fraunces';font-size:19px;font-weight:500}
-.level-desc{font-size:13.5px;color:var(--ink-soft);margin-top:1px}
+.level-btn.semente .level-glyph{color:var(--seed);background:var(--seed-bg);border-color:transparent;box-shadow:0 0 18px 0 #e0a64e38,inset 0 0 10px #e0a64e1f}
+.level-btn.aprendiz .level-glyph{color:var(--sage);background:var(--sage-bg);border-color:transparent;box-shadow:0 0 18px 0 #8fbc9438,inset 0 0 10px #8fbc941f}
+.level-btn.discipulo .level-glyph{color:var(--teal);background:var(--teal-bg);border-color:transparent;box-shadow:0 0 18px 0 #7fc4cf38,inset 0 0 10px #7fc4cf1f}
+.level-btn.sabio .level-glyph{color:var(--indigo-solid);background:var(--sabio-bg);border-color:transparent;box-shadow:0 0 18px 0 #9eb2e838,inset 0 0 10px #9eb2e81f}
+.level-btn.mestre .level-glyph{color:var(--plum);background:var(--plum-bg);border-color:transparent;box-shadow:0 0 18px 0 #d98aa838,inset 0 0 10px #d98aa81f}
+.level-btn.mix .level-glyph{color:var(--gold);background:var(--mix-bg);border-color:transparent;box-shadow:0 0 18px 0 #e3b04b38,inset 0 0 10px #e3b04b1f}
+.level-name{font-family:'Fraunces';font-size:19px;font-weight:500;display:block;line-height:1.25}
+.level-desc{font-size:13.5px;color:var(--ink-soft);display:block;margin-top:3px;line-height:1.35}
 
 /* ---------- QUIZ ---------- */
 #quiz{padding:18px 0 28px}
@@ -104,7 +115,7 @@ body::before{
 .lvl-pill.semente{color:var(--seed);background:var(--seed-bg);border-color:transparent}
 .lvl-pill.aprendiz{color:var(--sage);background:var(--sage-bg);border-color:transparent}
 .lvl-pill.discipulo{color:var(--teal);background:var(--teal-bg);border-color:transparent}
-.lvl-pill.sabio{color:var(--indigo-solid);background:#dfe4ec;border-color:transparent}
+.lvl-pill.sabio{color:var(--indigo-solid);background:var(--sabio-bg);border-color:transparent}
 .lvl-pill.mestre{color:var(--plum);background:var(--plum-bg);border-color:transparent}
 .question{font-family:'Fraunces';font-weight:400;font-size:25px;line-height:1.28;margin-bottom:24px;
   letter-spacing:-.005em}
@@ -119,9 +130,9 @@ body::before{
 .opt .key{font-family:'Fraunces';font-size:13px;width:26px;height:26px;flex:none;border-radius:50%;
   border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-soft);transition:all .2s}
 .opt.correct{border-color:var(--sage);background:var(--sage-bg)}
-.opt.correct .key{background:var(--sage);color:#fff;border-color:transparent}
+.opt.correct .key{background:var(--sage);color:#13182a;border-color:transparent}
 .opt.wrong{border-color:var(--clay);background:var(--clay-bg)}
-.opt.wrong .key{background:var(--clay);color:#fff;border-color:transparent}
+.opt.wrong .key{background:var(--clay);color:#13182a;border-color:transparent}
 .opt.dim{opacity:.5}
 
 /* explanation */
@@ -142,7 +153,7 @@ body::before{
   padding:17px;font-family:'Fraunces';font-size:16px;letter-spacing:.02em;cursor:pointer;width:100%;
   opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s,background .15s;pointer-events:none}
 .next-btn.show{opacity:1;transform:none;pointer-events:auto}
-.next-btn:active{background:#1c1813}
+.next-btn:active{background:#ddd4bd}
 
 /* ---------- END ---------- */
 #end{justify-content:center;text-align:center;padding:40px 0}
@@ -153,7 +164,7 @@ body::before{
 .end-sub{color:var(--ink-soft);font-size:15px;margin-bottom:34px}
 .again-btn{background:var(--ink);color:var(--paper);border:none;border-radius:14px;padding:16px 40px;
   font-family:'Fraunces';font-size:16px;cursor:pointer}
-.again-btn:active{background:#1c1813}
+.again-btn:active{background:#ddd4bd}
 
 .footer{text-align:center;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--ink-faint);padding:14px 0 22px}

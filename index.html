@@ -101,6 +101,24 @@ body::after{
 /* ---------- QUIZ ---------- */
 #quiz{padding:18px 0 28px}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.gamebar{display:flex;gap:8px;margin-bottom:14px;position:relative;flex-wrap:wrap}
+.gbtn{display:inline-flex;align-items:center;gap:6px;font-family:'Spectral',serif;font-size:13px;
+  color:var(--ink-soft);background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:7px 14px;cursor:pointer;transition:border-color .15s,color .15s}
+.gbtn:hover{border-color:var(--ink-faint);color:var(--ink)}
+.gbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.gbtn svg{width:13px;height:13px;fill:currentColor;flex:none}
+.lvl-pop{position:absolute;top:42px;left:0;z-index:30;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;box-shadow:var(--shadow);padding:8px;display:none;flex-direction:column;gap:2px;min-width:190px}
+.lvl-pop.open{display:flex}
+.lvl-pop button{display:flex;align-items:center;gap:10px;background:none;border:none;border-radius:10px;
+  padding:9px 12px;cursor:pointer;font-family:'Spectral',serif;font-size:14.5px;color:var(--ink);text-align:left;width:100%}
+.lvl-pop button:hover{background:var(--paper-2)}
+.lvl-pop .mini{font-family:'Fraunces';font-size:13px;width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center}
+.end-actions{display:flex;flex-direction:column;gap:10px;align-items:center}
+.home-btn{background:none;border:none;color:var(--ink-soft);font-family:'Spectral',serif;font-size:14px;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px}
+.home-btn:hover{color:var(--ink)}
 .progress{flex:1;height:3px;background:var(--line-soft);border-radius:3px;overflow:hidden;margin-right:16px}
 .progress span{display:block;height:100%;background:var(--ink);width:0;transition:width .4s ease}
 .metrics{display:flex;gap:18px;font-family:'Fraunces';font-size:13px;color:var(--ink-soft);white-space:nowrap}
@@ -213,6 +231,15 @@ body::after{
 
   <!-- QUIZ -->
   <section class="screen" id="quiz">
+    <div class="gamebar">
+      <button class="gbtn" id="gb-home" title="Voltar ao início">
+        <svg viewBox="0 0 24 24"><path d="M12 3 2 12h3v8a1 1 0 0 0 1 1h5v-6h2v6h5a1 1 0 0 0 1-1v-8h3L12 3z"/></svg>Início</button>
+      <button class="gbtn" id="gb-restart" title="Recomeçar esta rodada">
+        <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>Recomeçar</button>
+      <button class="gbtn" id="gb-level" title="Trocar de nível">
+        <svg viewBox="0 0 24 24"><path d="M7 14l5-9 5 9H7zm5 7a4 4 0 0 0 4-4H8a4 4 0 0 0 4 4z"/></svg>Trocar nível</button>
+      <div class="lvl-pop" id="lvl-pop"></div>
+    </div>
     <div class="topbar">
       <div class="progress"><span id="bar"></span></div>
       <div class="metrics">
@@ -239,7 +266,10 @@ body::after{
     <div class="score-big"><span id="final-score">0</span><span class="of">/<span id="final-total">0</span></span></div>
     <p class="end-msg" id="end-msg">—</p>
     <p class="end-sub" id="end-sub"></p>
-    <button class="again-btn" id="again">Jogar de novo</button>
+    <div class="end-actions">
+      <button class="again-btn" id="again">Jogar de novo</button>
+      <button class="home-btn" id="end-home">Voltar ao início</button>
+    </div>
   </section>
 
   <div class="footer">602 perguntas · 5 níveis · rodadas de 10</div>
@@ -259,7 +289,7 @@ const CATS = (window.BIBLIA && window.BIBLIA.categorias) || {};
 /* ============================================================ */
 const $ = id => document.getElementById(id);
 const ROUND_SIZE = 10;
-let deck=[], idx=0, score=0, streak=0, locked=false, selectedCat='ALL';
+let deck=[], idx=0, score=0, streak=0, locked=false, selectedCat='ALL', currentLevel='mix';
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
@@ -290,6 +320,7 @@ document.querySelectorAll('.level-btn').forEach(b=>{
 });
 
 function startGame(level){
+  currentLevel = level;
   let pool = POOL.slice();
   if(selectedCat!=='ALL') pool = pool.filter(q=>q.cat===selectedCat);
   if(level!=='mix') pool = pool.filter(q=>q.nivel===level);
@@ -393,7 +424,52 @@ function endGame(){
   show('end');
 }
 
-$('again').addEventListener('click',()=>show('start'));
+$('again').addEventListener('click',()=>startGame(currentLevel));
+$('end-home').addEventListener('click',()=>show('start'));
+
+// ---- controles durante o jogo ----
+const NIVEIS_MENU=[
+  ['semente','Semente','seed'],
+  ['aprendiz','Aprendiz','sage'],
+  ['discipulo','Discípulo','teal'],
+  ['sabio','Sábio','indigo-solid'],
+  ['mestre','Mestre','plum'],
+  ['mix','Misturado','gold']
+];
+const LVL_GLYPHS={semente:'1',aprendiz:'2',discipulo:'3',sabio:'4',mestre:'5',mix:'∞'};
+const LVL_BGS={semente:'var(--seed-bg)',aprendiz:'var(--sage-bg)',discipulo:'var(--teal-bg)',sabio:'var(--sabio-bg)',mestre:'var(--plum-bg)',mix:'var(--mix-bg)'};
+
+function midRound(){ return idx>0 || locked; }
+function confirmLeave(){ return !midRound() || confirm('Sair da rodada atual? O progresso desta partida será perdido.'); }
+
+$('gb-home').addEventListener('click',()=>{
+  if(confirmLeave()) show('start');
+});
+$('gb-restart').addEventListener('click',()=>{
+  if(!midRound() || confirm('Recomeçar a rodada do zero?')) startGame(currentLevel);
+});
+
+(function buildLvlPop(){
+  const pop=$('lvl-pop');
+  NIVEIS_MENU.forEach(([key,label,colorVar])=>{
+    const b=document.createElement('button');
+    b.innerHTML=`<span class="mini" style="color:var(--${colorVar});background:${LVL_BGS[key]}">${LVL_GLYPHS[key]}</span>${label}`;
+    b.addEventListener('click',()=>{
+      pop.classList.remove('open');
+      if(key===currentLevel){ return; }
+      if(confirmLeave()) startGame(key);
+    });
+    pop.appendChild(b);
+  });
+})();
+$('gb-level').addEventListener('click',e=>{
+  e.stopPropagation();
+  $('lvl-pop').classList.toggle('open');
+});
+document.addEventListener('click',e=>{
+  const pop=$('lvl-pop');
+  if(pop.classList.contains('open') && !pop.contains(e.target)) pop.classList.remove('open');
+});
 
 // ---- init ----
 (function init(){
